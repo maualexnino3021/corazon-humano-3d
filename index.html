@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; connect-src 'self' blob: data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#061534">
+<meta name="description" content="Modelo de Corazón y sus partes: vista humana y vista seccionada. Heart Model and Its Parts: human view and sectioned view.">
+<title>Modelo de Corazón y sus partes · Heart Model and Its Parts</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" aria-hidden="true"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f6e3a1"/><stop offset="1" stop-color="#b8942a"/></linearGradient></defs><circle cx="24" cy="24" r="22" fill="#071230" fill-opacity=".75" stroke="url(#gg)" stroke-width="2"/><path d="M8 26h8l3-9 5 16 4-11 2 4h10" fill="none" stroke="url(#gg)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="ttl">
+        <h1>Modelo de Corazón y sus partes</h1>
+        <p class="sub">Vista humana y vista seccionada</p>
+        <p class="en" lang="en">Heart Model and Its Parts<span>/</span>Human and Sectioned View</p>
+      </div>
+    </div>
+    <div class="glass seg" role="group" aria-label="Vista del modelo / Model view">
+      <button data-view="ext" aria-pressed="true">Vista humana<span class="x"> / Human view</span></button>
+      <button data-view="cut" aria-pressed="false">Vista seccionada<span class="x"> / Sectioned view</span></button>
+    </div>
+  </header>
+  <main id="stage">
+    <canvas id="gl" role="img" aria-label="Modelo 3D interactivo del corazón humano"></canvas>
+    <svg id="lines" aria-hidden="true" hidden></svg>
+    <div id="tags" hidden></div>
+    <details id="legend" hidden><summary>Partes / Parts</summary><ol id="legendList"></ol></details>
+    <div id="loading" role="status"><i></i><span>Cargando modelo / Loading model… <b id="pct"></b></span></div>
+    <p id="msg" class="glass" role="alert" hidden></p>
+  </main>
+  <footer class="dock">
+    <div class="glass pad" role="group" aria-label="Controles de cámara / Camera controls">
+      <button class="b" data-act="rl" aria-label="Girar a la izquierda / Rotate left" title="Girar a la izquierda / Rotate left (←)">◀</button>
+      <button class="b" data-act="rr" aria-label="Girar a la derecha / Rotate right" title="Girar a la derecha / Rotate right (→)">▶</button>
+      <button class="b" data-act="tu" aria-label="Inclinar hacia arriba / Tilt up" title="Inclinar hacia arriba / Tilt up (↑)">▲</button>
+      <button class="b" data-act="td" aria-label="Inclinar hacia abajo / Tilt down" title="Inclinar hacia abajo / Tilt down (↓)">▼</button>
+      <span class="sep"></span>
+      <button class="b" data-act="zo" aria-label="Reducir / Zoom out" title="Reducir / Zoom out (−)">−</button>
+      <button class="b" data-act="zi" aria-label="Ampliar / Zoom in" title="Ampliar / Zoom in (+)">+</button>
+      <button class="b" data-act="rs" aria-label="Restablecer vista / Reset view" title="Restablecer vista / Reset view (0)">◎</button>
+    </div>
+    <div class="glass groups" id="groups" role="group" aria-label="Filtrar partes / Filter parts" hidden>
+      <button class="pill" data-g="all" aria-pressed="true">Todas<span class="x"> / All</span></button>
+      <button class="pill" data-g="cam" aria-pressed="false" title="Chambers">Cámaras<span class="x"> / Chambers</span></button>
+      <button class="pill" data-g="val" aria-pressed="false" title="Valves">Válvulas<span class="x"> / Valves</span></button>
+      <button class="pill" data-g="ves" aria-pressed="false" title="Great vessels">Vasos<span class="x"> / Vessels</span></button>
+      <button class="pill" data-g="est" aria-pressed="false" title="Structures">Estructuras<span class="x"> / Structures</span></button>
+    </div>
+    <div class="glass beat">
+      <button id="play" class="pill" aria-pressed="false" title="Pausar o reanudar / Pause or resume (Space)">❚❚ Pausar<span class="x"> / Pause</span></button>
+      <button id="snd" class="pill" aria-pressed="false" title="Sonido de latido y bombeo / Heartbeat and pumping sound (M)">♪ Sonido<span class="x"> / Sound</span></button>
+      <label class="rng"><span>Ritmo<span class="x"> / Rate</span></span>
+        <input id="bpm" type="range" min="40" max="180" step="1" value="72" aria-label="Frecuencia cardiaca en latidos por minuto / Heart rate in beats per minute">
+        <output id="bpmOut">72</output></label>
+      <output id="tele" class="tele"></output>
+    </div>
+  </footer>
+  <div class="foot">
+    <details id="vis" class="vis glass" aria-label="Contador de visitas / Visit counter">
+      <summary><span class="vt">Visitas<span class="x"> / Visits</span> <span id="visYear"></span><span class="bd" id="visFlag" hidden></span></span><strong id="visTotal">—</strong></summary>
+      <ol id="visList"><li class="empty">Cargando… / Loading…</li></ol>
+    </details>
+    <div class="byline">
+    <p class="dev"><span lang="es">Desarrollado por <b>Mauricio Niño Gamboa</b> · Noviembre 2027</span><i>/</i><span lang="en">Developed by <b>Mauricio Niño Gamboa</b> · November 2027</span></p>
+    <p class="src">Modelos 3D / 3D models: <a href="https://sketchfab.com/neshallads" target="_blank" rel="noopener noreferrer">neshallads</a> · <a href="https://sketchfab.com/jalmer" target="_blank" rel="noopener noreferrer">jalmer</a> · CC BY 4.0<i>◆</i>Licencia MIT / MIT License</p>
+  </div>
+  </div>
+</div>
+<noscript><p class="glass" style="padding:1rem;margin:1rem">Se requiere JavaScript / JavaScript is required.</p></noscript>
+<script src="vendor/three.min.js"></script>
+<script src="vendor/OrbitControls.js"></script>
+<script src="vendor/GLTFLoader.js"></script>
+<script src="js/app.js"></script>
+<script src="js/visits.js" defer></script>
+</body>
+</html>
