@@ -81,9 +81,9 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)retur
  const v=camera.fov*Math.PI/360,hf=Math.atan(Math.tan(v)*camera.aspect);
  const k=zoomK;fit=1.35/Math.sin(Math.min(v,hf));
  controls.minDistance=fit*.3;controls.maxDistance=fit*1.8;
- camera.position.copy(controls.target).add(off.copy(camera.position).sub(controls.target).setLength(k*fit));
+ {const o=off.copy(camera.position).sub(controls.target);if(o.lengthSq()>1e-9)o.setLength(k*fit);camera.position.copy(controls.target).add(o)} // conserva la dirección al redimensionar
  reflow()}
-const D=Math.PI/180,POSE={ext:{th:65*D,ph:104*D,k:1},cut:{th:-10*D,ph:54*D,k:.7}},wrap=a=>Math.atan2(Math.sin(a),Math.cos(a)); // vistas iniciales
+const D=Math.PI/180,POSE={ext:{th:65*D,ph:104*D,k:1},cut:{th:2*D,ph:35*D,k:.58}},wrap=a=>Math.atan2(Math.sin(a),Math.cos(a)); // vistas iniciales
 function resetCam(){const c=S.view==='cut',p=POSE[S.view];zoomK=p.k;goal=null;controls.target.copy(c?cutTarget:new V3());
  camera.position.copy(controls.target).add(off.setFromSpherical(sph.set(fit*p.k,p.ph,p.th)));camera.lookAt(controls.target);controls.update()}
 function nudge(dt,dp,f){const s=cur(),g=goal||{th:0,ph:s.phi,k:zoomK}; // th = ángulo que falta por girar (sin acumular vueltas)
