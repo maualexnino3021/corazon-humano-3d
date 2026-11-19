@@ -83,10 +83,11 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)retur
  controls.minDistance=fit*.3;controls.maxDistance=fit*1.8;
  camera.position.copy(controls.target).add(off.copy(camera.position).sub(controls.target).setLength(k*fit));
  reflow()}
-function resetCam(){const c=S.view==='cut';zoomK=c?.85:1;goal=null;controls.target.copy(c?cutTarget:new V3());
- camera.position.set(controls.target.x,controls.target.y,controls.target.z+fit*zoomK);camera.lookAt(controls.target);controls.update()}
-function nudge(dt,dp,f){const s=cur(),g=goal||{th:s.theta,ph:s.phi,k:zoomK};
- g.th=clamp(g.th+dt,controls.minAzimuthAngle,controls.maxAzimuthAngle);g.ph=clamp(g.ph+dp,controls.minPolarAngle,controls.maxPolarAngle);g.k=clamp(g.k*f,.3,1.8);goal=g}
+const D=Math.PI/180,POSE={ext:{th:65*D,ph:104*D,k:1},cut:{th:-10*D,ph:54*D,k:.7}},wrap=a=>Math.atan2(Math.sin(a),Math.cos(a)); // vistas iniciales
+function resetCam(){const c=S.view==='cut',p=POSE[S.view];zoomK=p.k;goal=null;controls.target.copy(c?cutTarget:new V3());
+ camera.position.copy(controls.target).add(off.setFromSpherical(sph.set(fit*p.k,p.ph,p.th)));camera.lookAt(controls.target);controls.update()}
+function nudge(dt,dp,f){const s=cur(),g=goal||{th:0,ph:s.phi,k:zoomK}; // th = ángulo que falta por girar (sin acumular vueltas)
+ g.th+=dt;g.ph=clamp(g.ph+dp,controls.minPolarAngle,controls.maxPolarAngle);g.k=clamp(g.k*f,.3,1.8);goal=g}
 new ResizeObserver(resize).observe(stage);resize();resetCam();
 
 function setView(v){if(v==='cut'&&!cutReady){loadCut(()=>setView('cut'));return}
@@ -97,7 +98,7 @@ function setView(v){if(v==='cut'&&!cutReady){loadCut(()=>setView('cut'));return}
 document.querySelector('header').addEventListener('click',e=>{const b=e.target.closest('[data-view]');if(b)setView(b.dataset.view)});
 
 $('#groups').addEventListener('click',e=>{const b=e.target.closest('[data-g]');if(!b)return;G=b.dataset.g;document.querySelectorAll('[data-g]').forEach(x=>x.setAttribute('aria-pressed',x===b));reflow()});
-const ACT={rl:()=>nudge(.5,0,1),rr:()=>nudge(-.5,0,1),tu:()=>nudge(0,-.35,1),td:()=>nudge(0,.35,1),zi:()=>nudge(0,0,.8),zo:()=>nudge(0,0,1.25),rs:()=>{goal={th:0,ph:Math.PI/2,k:S.view==='cut'?.85:1}}};
+const ACT={rl:()=>nudge(.5,0,1),rr:()=>nudge(-.5,0,1),tu:()=>nudge(0,-.35,1),td:()=>nudge(0,.35,1),zi:()=>nudge(0,0,.8),zo:()=>nudge(0,0,1.25),rs:()=>{const p=POSE[S.view];goal={th:wrap(p.th-cur().theta),ph:p.ph,k:p.k}}};
 $('.pad').addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(b)ACT[b.dataset.act]()});
 const setPlay=()=>{bi(play,S.paused?'▶ Reanudar':'❚❚ Pausar',S.paused?'Resume':'Pause');play.setAttribute('aria-pressed',S.paused)};
 play.addEventListener('click',()=>{S.paused=!S.paused;setPlay()});
@@ -155,9 +156,9 @@ function layout(){const w=stage.clientWidth,h=stage.clientHeight,{pad,m,gh,sp}=L
 function frame(){requestAnimationFrame(frame);const dt=Math.min(clock.getDelta(),.1);
  if(!S.paused)S.t+=dt*S.bpm/60;const c=S.t%1;
  if(sound&&!S.paused&&prevC!==null)beats(prevC,c);prevC=c;
- if(goal){const s=cur(),a=rm?1:.16;s.theta+=(goal.th-s.theta)*a;s.phi+=(goal.ph-s.phi)*a;s.radius=fit*(zoomK+(goal.k-zoomK)*a);
+ if(goal){const s=cur(),a=rm?1:.16,dd=goal.th*a;s.theta+=dd;goal.th-=dd;s.phi+=(goal.ph-s.phi)*a;s.radius=fit*(zoomK+(goal.k-zoomK)*a);
   camera.position.copy(controls.target).add(off.setFromSpherical(s));camera.lookAt(controls.target);
-  if(Math.abs(goal.th-s.theta)+Math.abs(goal.ph-s.phi)+Math.abs(goal.k-zoomK)<.002)goal=null}
+  if(Math.abs(goal.th)+Math.abs(goal.ph-s.phi)+Math.abs(goal.k-zoomK)<.002)goal=null}
  controls.update();camera.updateMatrixWorld();
  if(S.view==='ext'){if(ext)rootExt.scale.setScalar(1+.045*pulse(c))}
  else if(cutReady){if(mixer)mixer.setTime(c*clipDur);rootCut.updateMatrixWorld(true);

@@ -16,12 +16,9 @@ function render(d){
 async function run(){
  if(new URLSearchParams(location.search).has('demo')){render({year:new Date().getFullYear(),total:3120,top:[{c:'CO',n:1248},{c:'MX',n:612},{c:'ES',n:430},{c:'US',n:301}],demo:true});return}
  try{
-  const today=new Date().toISOString().slice(0,10);let seen=null;try{seen=localStorage.getItem('hv')}catch(e){}
-  const post=seen!==today&&navigator.doNotTrack!=='1'; // 1 visita/día por navegador; respeta "No rastrear"
-  const r=await fetch('/api/visits',{method:post?'POST':'GET',cache:'no-store',credentials:'omit'});
+  const r=await fetch('/api/visits',{method:'POST',cache:'no-store',credentials:'omit',keepalive:true}); // cada carga de página = 1 visita
   if(!r.ok)throw new Error(r.status);
-  const d=await r.json();if(post){try{localStorage.setItem('hv',today)}catch(e){}}
-  render(d)}
+  render(await r.json())}
  catch(e){tot.textContent='—';yr.textContent=new Date().getFullYear();note('Contador no disponible / Counter unavailable')}}
-setTimeout(run,700); // no compite con la carga del modelo 3D
+run();
 })();

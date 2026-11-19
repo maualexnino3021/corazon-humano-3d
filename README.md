@@ -13,7 +13,7 @@ Interactive 3D human heart for any browser, from tiny 2.5" screens to 50" displa
 - Buttons: rotate, tilt, zoom in/out, reset. Keys: arrows, `+`/`-`, `0`, Space, Esc.
 - Layout never overlaps the model; the camera always fits the viewport, so the image is never stretched.
 
-**Visit counter (bottom-left)**: shows the current year's total and the top 4 countries. It runs on a Vercel serverless function (`api/visits.js`) + free Upstash Redis. Setup: Vercel project → *Storage / Marketplace* → add *Upstash Redis* (free) → connect it to the project → redeploy (or set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`, see `.env.example`; optional `COUNTER_TZ`). Counters are keyed by year, so they restart every calendar year. **Privacy**: IPs are not stored — only counts per country code; one count per browser per day; "Do Not Track" is respected. Design preview without backend: open `/?demo`.
+**Visit counter (bottom-left)**: shows the current year's total and the top 4 countries. It runs on a Vercel serverless function (`api/visits.js`) + free Upstash Redis. Setup: Vercel project → *Storage / Marketplace* → add *Upstash Redis* (free) → connect it to the project → redeploy (or set `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`, see `.env.example`; optional `COUNTER_TZ`). Counters are keyed by year, so they restart every calendar year. **Privacy**: IPs are not stored — only counts per country code; every page load counts as one visit (not de-duplicated by IP or browser). Design preview without backend: open `/?demo`.
 
 **Run locally** (a server is required; `file://` cannot load `.glb`): `npx serve .` or `python3 -m http.server`
 
@@ -37,7 +37,7 @@ Corazón humano 3D interactivo para cualquier navegador, desde pantallas de 2,5"
 - Botones: girar, inclinar, ampliar/reducir, restablecer. Teclas: flechas, `+`/`-`, `0`, Espacio, Esc.
 - Los paneles nunca tapan el modelo; la cámara se ajusta siempre a la pantalla, por lo que la imagen no se deforma.
 
-**Contador de visitas (abajo a la izquierda)**: muestra el total del año en curso y el top 4 de países. Usa una función serverless de Vercel (`api/visits.js`) + Upstash Redis gratuito. Configuración: proyecto en Vercel → *Storage / Marketplace* → añadir *Upstash Redis* (gratis) → conectarlo al proyecto → volver a desplegar (o definir `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`, ver `.env.example`; opcional `COUNTER_TZ`). Los contadores se guardan por año, así que se reinician cada año calendario. **Privacidad**: no se guardan IP, solo conteos por código de país; una cuenta por navegador al día; se respeta «No rastrear». Vista previa del diseño sin backend: abre `/?demo`.
+**Contador de visitas (abajo a la izquierda)**: muestra el total del año en curso y el top 4 de países. Usa una función serverless de Vercel (`api/visits.js`) + Upstash Redis gratuito. Configuración: proyecto en Vercel → *Storage / Marketplace* → añadir *Upstash Redis* (gratis) → conectarlo al proyecto → volver a desplegar (o definir `UPSTASH_REDIS_REST_URL` / `UPSTASH_REDIS_REST_TOKEN`, ver `.env.example`; opcional `COUNTER_TZ`). Los contadores se guardan por año, así que se reinician cada año calendario. **Privacidad**: no se guardan IP, solo conteos por código de país; cada carga de la página cuenta como una visita (sin deduplicar por IP ni navegador). Vista previa del diseño sin backend: abre `/?demo`.
 
 **Ejecutar en local** (requiere servidor; con `file://` no cargan los `.glb`): `npx serve .` o `python3 -m http.server`
 

@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
     if (req.method === 'POST') {
       if (!sameOrigin(req)) return send(403, { error: 'origin' });
       const ua = String(req.headers['user-agent'] || '');
-      if (!/bot|crawl|spider|slurp|headless|preview|monitor/i.test(ua)) {
+      if (!/bot|crawl|spider|slurp|headless/i.test(ua)) {
         let c = String(req.headers['x-vercel-ip-country'] || '').toUpperCase();
         if (!persistent && !c) c = SAMPLE[(Math.random() * SAMPLE.length) | 0];
         if (!/^[A-Z]{2}$/.test(c)) c = 'XX';
